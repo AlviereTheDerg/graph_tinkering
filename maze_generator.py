@@ -3,8 +3,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 
-def generate_maze(dimensions) -> nx.Graph:
+def generate_maze(dimensions, seed=None) -> nx.Graph:
     graph = nx.grid_graph(dimensions)
+    random.seed(seed)
 
     in_group = {random.choice(list(graph.nodes))}
     out_group = set(graph.nodes) - in_group
@@ -26,11 +27,9 @@ def generate_maze(dimensions) -> nx.Graph:
         out_group -= in_group
     return output
 
-
-
 if __name__ == '__main__':
     print("Basic showcase")
-    G = generate_maze((12,12))
+    G = generate_maze((12,12), 4) # chosen by random dice roll
     pos = {v:v for v in G.nodes}
     nx.draw_networkx_edges(G, pos)
     nx.draw_networkx_nodes(G, pos, node_size=30)
