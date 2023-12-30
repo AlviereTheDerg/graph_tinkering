@@ -33,5 +33,4 @@ if __name__ == '__main__':
     pos = {v:v for v in G.nodes}
     nx.draw_networkx_edges(G, pos)
     nx.draw_networkx_nodes(G, pos, node_size=30)
-    plt.axis("off")
-    plt.savefig("result.png")
+    plt.show()
