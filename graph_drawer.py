@@ -6,6 +6,10 @@ def do_animation(graph_space, interval, graph_drawer, graph_generator):
     fig, ax = plt.subplots(figsize=graph_space)
     ax.set_xticks([])
     ax.set_yticks([])
+
+    def on_close(event):
+        plt.close()
+    fig.canvas.mpl_connect('close_event', on_close)
     
     def update(graph_data):
         ax.clear()
