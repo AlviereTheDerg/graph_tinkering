@@ -33,9 +33,9 @@ def underlying_process(graph_space, graph: nx.Graph, pos, source, destination, f
         colours = {item:'#000077' for item in visited}
         colours.update({item:'#0000FF' for item in deque_data})
         colours.update({item:'#AAAA00' for item in path})
+        colours[current_investigation] = '#00FF00'
         colours[source] = '#FF0000'
         colours[destination] = '#AA3300'
-        colours[current_investigation] = '#00FF00'
 
         if flag:
             queue_positions = {item:pos+1 for pos,item in enumerate(deque_data)}
@@ -57,3 +57,7 @@ if __name__ == '__main__':
     maze = generate_maze((4,4),5)
     BFS_animation((4,4), maze, {coord:coord for coord in maze}, (0,0), (3,3))
     DFS_animation((4,4), maze, {coord:coord for coord in maze}, (0,0), (3,3))
+
+    maze = generate_maze((8,8),5)
+    BFS_animation((8,8), maze, {coord:coord for coord in maze}, (4,4), (1,5))
+    DFS_animation((8,8), maze, {coord:coord for coord in maze}, (4,4), (1,5))
