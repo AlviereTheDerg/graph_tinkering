@@ -38,18 +38,26 @@ def knn_search(ball, point, k, founds, no_self_edges=True):
         founds = knn_search(second, point, k, founds, no_self_edges)
     return founds
 
-def create_knn_graph(data, k, no_self_edges=True):
+def create_knn_graph(data, k, *, maker=nx.Graph, no_self_edges=True):
     ball = ball_tree(data)
-    graph = nx.Graph()
+    graph = maker()
     for entry in tqdm(data):
         for neighbour in knn_search(ball, entry, k, [], no_self_edges):
-            graph.add_edge(entry, neighbour)
+            graph.add_edge(entry, neighbour, weight=distance_between(entry, neighbour))
     return graph
 
-def create_random_2d_knn_graph(data_points, k, seed=None, no_self_edges=True):
-    return create_knn_graph(n_random_coords(data_points, seed=seed), k, no_self_edges)
+def create_random_2d_knn_graph(number_of_points, k, *, max_distance=1, seed=None, maker=nx.Graph, no_self_edges=True):
+    return create_knn_graph(n_random_coords(number_of_points, max_distance=max_distance, seed=seed), k, maker=maker, no_self_edges=no_self_edges)
 
 if __name__ == '__main__':
-    graph = create_random_2d_knn_graph(64, 4, 4)
-    nx.draw(graph, {coord:coord for coord in graph})
+    graph = create_random_2d_knn_graph(64, 4, seed=4)
+    pos = {coord:coord for coord in graph}
+    nx.draw(graph, pos)
+    nx.draw_networkx_edge_labels(graph, pos, {(u,v):round(d*10, 2) for u,v,d in graph.edges.data("weight")})
+    plt.show()
+
+    graph = create_random_2d_knn_graph(64, 4, max_distance=10, seed=4, maker=nx.DiGraph)
+    pos = {coord:coord for coord in graph}
+    nx.draw(graph, pos)
+    nx.draw_networkx_edge_labels(graph, pos, {(u,v):round(d, 2) for u,v,d in graph.edges.data("weight")})
     plt.show()
