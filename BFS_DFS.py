@@ -2,30 +2,27 @@
 import networkx as nx
 from collections import deque
 from graph_drawer import do_animation
-from maze_generator import generate_maze
 
 def underlying_process(graph_space, graph: nx.Graph, pos, source, destination, flag: bool):
     def search() -> any:
-        visited = set()
         parents = {source:None}
         search = deque()
         search.append(source)
         while search:
             node = search.popleft() if flag else search.pop()
-            visited.add(node)
             for neighbour in graph[node]:
                 if neighbour == destination:
                     path = [destination, node]
                     while parents[path[-1]] != None:
                         path.append(parents[path[-1]])
                     for _ in range(2): # hold for an extra frame
-                        yield (visited, search, destination, path)
+                        yield (parents, search, destination, path)
                     return
-                if neighbour not in visited:
+                if neighbour not in parents:
                     parents[neighbour] = node
                     search.append(neighbour)
-            yield (visited, search, node, [])
-        yield (visited, {}, destination, [])
+            yield (parents, search, node, [])
+        yield (parents, {}, destination, [])
     
     node_list = [node for node in graph]
     def draw(graph_data):
@@ -54,6 +51,13 @@ def DFS_animation(graph_space, graph: nx.Graph, pos, source, destination):
     underlying_process(graph_space, graph, pos, source, destination, False)
 
 if __name__ == '__main__':
+    from KNN_graph_generator import create_random_2d_knn_graph
+    from random import choice
+    maze = create_random_2d_knn_graph(64, 4, 4)
+    BFS_animation((8,8), maze, {coord:coord for coord in maze}, choice(list(maze.nodes())), None)
+    DFS_animation((8,8), maze, {coord:coord for coord in maze}, choice(list(maze.nodes())), None)
+
+    from maze_generator import generate_maze
     maze = generate_maze((4,4),5)
     BFS_animation((4,4), maze, {coord:coord for coord in maze}, (0,0), (3,3))
     DFS_animation((4,4), maze, {coord:coord for coord in maze}, (0,0), (3,3))
