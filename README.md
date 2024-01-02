@@ -7,9 +7,9 @@ I recently finished Graph Algorithms, and I'm curious what some look like in act
 - [x] construct a BFS search for the visualizer and test it on the mazes generated
    - and it's little DFS too
 - [x] find and fix issue causing execution to hang after closing matplotlib window
-- [ ] set up coordinate handling helpers
-- [ ] find another random graph generator to utilize for larger samples
-   - [ ] generate set of random coordinates
-   - [ ] KNN to connect coordinates into a graph
+- [x] set up coordinate handling helpers
+- [x] find another random graph generator to utilize for larger samples
+   - [x] generate set of random coordinates
+   - [x] KNN to connect coordinates into a graph
 - [ ] Beam search
 - [ ] Djikstra and A*
