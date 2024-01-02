@@ -128,3 +128,6 @@ class cosine_of_test(unittest.TestCase):
         self.assertAlmostEqual(cosine_of((0,0,0), (0,0,1), (1,1,0)), 0, msg="Coords typed out")
         self.assertAlmostEqual(cosine_of(tuple(), (0,0,1), (1,1,0)), 0, msg="tuple() origin")
         self.assertAlmostEqual(cosine_of(tuple(), (0,0,1), (1,1)), 0, msg="tuple() origin, truncated XY")
+
+    def test_2d_line(self):
+        self.assertAlmostEqual(cosine_of(tuple(),(1,),(-1,)), -1, msg="Straight line: cos(180)")
