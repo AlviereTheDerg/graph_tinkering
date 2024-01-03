@@ -52,6 +52,14 @@ def distance_between(A: tuple[int], B: tuple[int], L=2):
     """
     return sum(abs(A[i]-B[i])**L for i in range(len(A))) ** (1/L)
 
+def distance_from(destination: tuple[int], L=2):
+    """
+    Return a closure to easily compare a series of coordinates against a designated destination
+    """
+    def distance_from_destination(source: tuple[int]):
+        return distance_between(source, destination, L)
+    return distance_from_destination
+
 @length_match_first_n_inputs()
 def sum_coords(*tuple_list):
     """

@@ -88,6 +88,34 @@ class distance_between_test(unittest.TestCase):
     def test_euclidean_diff_len_coords_named(self):
         self.assertAlmostEqual(distance_between((5,2,4),(6,5),L=2), 26**(1/2))
 
+class distance_from_test(unittest.TestCase):
+    #manhattan distances
+    def test_manhattan_identical_coords(self):
+        coord_5_2_L_1 = distance_from((5,2), 1)
+        self.assertAlmostEqual(coord_5_2_L_1((5,2)), 0)
+
+    def test_manhattan_diff_coords(self):
+        coord_5_2_L_1 = distance_from((5,2), 1)
+        self.assertAlmostEqual(coord_5_2_L_1((6,5)), 4)
+        
+    def test_manhattan_diff_len_coords(self):
+        coord_5_2_L_1 = distance_from((5,2), 1)
+        self.assertAlmostEqual(coord_5_2_L_1((6,5,4)), 8)
+    
+    #euclidean distances
+    coord_5_2_L_2 = distance_from((5,2), 2)
+    def test_euclidean_identical_coords(self):
+        coord_5_2_L_2 = distance_from((5,2), 2)
+        self.assertAlmostEqual(coord_5_2_L_2((5,2)), 0)
+
+    def test_euclidean_diff_coords(self):
+        coord_5_2_L_2 = distance_from((5,2), 2)
+        self.assertAlmostEqual(coord_5_2_L_2((6,5)), 10**(1/2))
+
+    def test_euclidean_diff_len_coords(self):
+        coord_5_2_L_2 = distance_from((5,2), 2)
+        self.assertAlmostEqual(coord_5_2_L_2((6,5,4)), 26**(1/2))
+
 class sum_coords_test(unittest.TestCase):
     def test_two_same_length_coords(self):
         self.assertEqual(sum_coords((4,3),(1,6)), (5,9))
