@@ -11,5 +11,5 @@ I recently finished Graph Algorithms, and I'm curious what some look like in act
 - [x] find another random graph generator to utilize for larger samples
    - [x] generate set of random coordinates
    - [x] KNN to connect coordinates into a graph
-- [ ] Beam search
+- [x] Beam search
 - [ ] Djikstra and A*
