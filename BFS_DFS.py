@@ -44,18 +44,18 @@ def underlying_process(graph_space, graph: nx.Graph, pos, source, destination, f
         nx.draw_networkx_labels(graph, pos, queue_positions)
     do_animation(graph_space, 400, draw, search)
 
-def BFS_animation(graph_space, graph: nx.Graph, pos, source, destination):
+def BFS_animation(graph_space, graph: nx.Graph, pos, source, destination=None):
     underlying_process(graph_space, graph, pos, source, destination, True)
 
-def DFS_animation(graph_space, graph: nx.Graph, pos, source, destination):
+def DFS_animation(graph_space, graph: nx.Graph, pos, source, destination=None):
     underlying_process(graph_space, graph, pos, source, destination, False)
 
 if __name__ == '__main__':
     from KNN_graph_generator import create_random_2d_knn_graph
     from random import choice
     maze = create_random_2d_knn_graph(64, 4, 4)
-    BFS_animation((8,8), maze, {coord:coord for coord in maze}, choice(list(maze.nodes())), None)
-    DFS_animation((8,8), maze, {coord:coord for coord in maze}, choice(list(maze.nodes())), None)
+    BFS_animation((8,8), maze, {coord:coord for coord in maze}, choice(list(maze.nodes())))
+    DFS_animation((8,8), maze, {coord:coord for coord in maze}, choice(list(maze.nodes())))
 
     from maze_generator import generate_maze
     maze = generate_maze((4,4),5)
