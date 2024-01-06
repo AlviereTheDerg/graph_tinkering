@@ -78,3 +78,7 @@ if __name__ == '__main__':
     graph = create_knn_graph(data, 3)
     beam_search_animation((6,6), graph, 5, {coord:coord for coord in graph}, source, destination)
     beam_stack_search_animation((6,6), graph, 5, {coord:coord for coord in graph}, source, destination)
+
+    destination = max(data, key=lambda point: point[0] - point[1])
+    beam_search_animation((6,6), graph, 5, {coord:coord for coord in graph}, source, destination)
+    beam_stack_search_animation((6,6), graph, 5, {coord:coord for coord in graph}, source, destination)
