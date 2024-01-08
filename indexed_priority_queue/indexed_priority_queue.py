@@ -31,6 +31,9 @@ class IPQ:
             else:
                 break
     
+    def _siftdown(self, index):
+        pass
+    
     # internal put vs update_key
     def _put(self, key, value):
         self._indexes[key] = len(self._heap)
