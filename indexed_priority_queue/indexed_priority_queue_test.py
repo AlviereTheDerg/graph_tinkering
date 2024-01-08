@@ -204,6 +204,24 @@ class IPQ_siftup_tests(unittest.TestCase):
             self.assertEqual(ipq_index, ipq._indexes[item], index)
             self.assertEqual(self.priorities_data[item], ipq._priorities[item], index)
 
+    def test_siftup_no_difference(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:2]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:1 for item in ipq._heap}
+
+        ipq._siftdown(1)
+        # check that the lengths are untouched
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that the item info is correct
+        for index,item in enumerate(self.heap_data[0:2]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(1, ipq._priorities[item])
+
 class IPQ_siftdown_tests(unittest.TestCase):
     def setUp(self):
         self.heap_data = ["stuff","things","others","IMPORTANT"]
@@ -413,6 +431,24 @@ class IPQ_siftdown_tests(unittest.TestCase):
             self.assertEqual(index, ipq._indexes[item])
             self.assertEqual(self.priorities_data[item], ipq._priorities[item])
 
+    def test_siftdown_no_difference(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:3]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:1 for item in ipq._heap}
+
+        ipq._siftdown(0)
+        # check that the lengths are untouched
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that the item info is correct
+        for index,item in enumerate(self.heap_data[0:3]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(1, ipq._priorities[item])
+
 
 class IPQ_internal_put_tests(unittest.TestCase):
     def setUp(self):
@@ -492,7 +528,8 @@ class IPQ_internal_update_key_tests(unittest.TestCase):
         self.assertEqual(self.heap_data, self.ipq._heap)
         self.assertEqual(previous_indexes, self.ipq._indexes)
         self.assertEqual(self.priorities_data[self.ipq._heap[0]]-1, self.ipq._priorities[self.ipq._heap[0]])
-        self.assertEqual(self.priorities_data - {self.ipq._heap[0]}, self.ipq._priorities - {self.ipq._heap[0]})
+        for key in self.priorities_data.keys() - {self.ipq._heap[0]}:
+            self.assertEqual(self.priorities_data[key], self.ipq._priorities[key], key)
     
     def test_update_key_increase_root_but_not_order_changing(self):
         previous_indexes = self.ipq._indexes.copy()
@@ -501,7 +538,8 @@ class IPQ_internal_update_key_tests(unittest.TestCase):
         self.assertEqual(self.heap_data, self.ipq._heap)
         self.assertEqual(previous_indexes, self.ipq._indexes)
         self.assertEqual(self.priorities_data[self.ipq._heap[0]]+1, self.ipq._priorities[self.ipq._heap[0]])
-        self.assertEqual(self.priorities_data - {self.ipq._heap[0]}, self.ipq._priorities - {self.ipq._heap[0]})
+        for key in self.priorities_data.keys() - {self.ipq._heap[0]}:
+            self.assertEqual(self.priorities_data[key], self.ipq._priorities[key], key)
     
     def test_update_key_decrease_leaf_but_not_order_changing(self):
         previous_indexes = self.ipq._indexes.copy()
@@ -510,7 +548,8 @@ class IPQ_internal_update_key_tests(unittest.TestCase):
         self.assertEqual(self.heap_data, self.ipq._heap)
         self.assertEqual(previous_indexes, self.ipq._indexes)
         self.assertEqual(self.priorities_data[self.ipq._heap[2]]-1, self.ipq._priorities[self.ipq._heap[2]])
-        self.assertEqual(self.priorities_data - {self.ipq._heap[2]}, self.ipq._priorities - {self.ipq._heap[2]})
+        for key in self.priorities_data.keys() - {self.ipq._heap[2]}:
+            self.assertEqual(self.priorities_data[key], self.ipq._priorities[key], key)
     
     def test_update_key_increase_leaf(self):
         previous_indexes = self.ipq._indexes.copy()
@@ -519,7 +558,8 @@ class IPQ_internal_update_key_tests(unittest.TestCase):
         self.assertEqual(self.heap_data, self.ipq._heap)
         self.assertEqual(previous_indexes, self.ipq._indexes)
         self.assertEqual(self.priorities_data[self.ipq._heap[2]]+1, self.ipq._priorities[self.ipq._heap[2]])
-        self.assertEqual(self.priorities_data - {self.ipq._heap[2]}, self.ipq._priorities - {self.ipq._heap[2]})
+        for key in self.priorities_data.keys() - {self.ipq._heap[2]}:
+            self.assertEqual(self.priorities_data[key], self.ipq._priorities[key], key)
 
 
 if __name__ == '__main__':
