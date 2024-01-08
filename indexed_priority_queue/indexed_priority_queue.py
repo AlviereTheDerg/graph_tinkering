@@ -32,7 +32,20 @@ class IPQ:
                 break
     
     def _siftdown(self, index):
-        pass
+        while True:
+            l,r = index*2+1, index*2+2
+            match   l < len(self._heap) and self._compare(self._priorities[self._heap[l]], self._priorities[self._heap[index]]), \
+                    r < len(self._heap) and self._compare(self._priorities[self._heap[r]], self._priorities[self._heap[index]]):
+                case False, False:
+                    break
+                case False, True:
+                    switch_with = r
+                case True, False:
+                    switch_with = l
+                case True, True:
+                    switch_with = l if self._compare(self._priorities[self._heap[l]], self._priorities[self._heap[r]]) else r
+            self._swap(index, switch_with)
+            index = switch_with
     
     # internal put vs update_key
     def _put(self, key, value):
