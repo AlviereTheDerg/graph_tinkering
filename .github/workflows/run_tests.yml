@@ -1,6 +1,6 @@
 
 name: Python unittests
-on: [push, workflow_dispath]
+on: [push, workflow_dispatch]
 jobs:
   Python-Tests:
     runs-on: ubuntu-latest
