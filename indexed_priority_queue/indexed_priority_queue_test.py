@@ -1,0 +1,270 @@
+
+import unittest
+if __name__ == '__main__':
+    from indexed_priority_queue import IPQ
+else:
+    from indexed_priority_queue.indexed_priority_queue import IPQ
+
+class IPQ_initialization_tests(unittest.TestCase):
+    def test_no_params(self):
+        ipq = IPQ()
+        self.assertEqual(0, len(ipq._heap))
+        self.assertEqual(0, len(ipq._indexes))
+        self.assertEqual(0, len(ipq._priorities))
+
+class IPQ_swap_function_tests(unittest.TestCase):
+    def setUp(self):
+        self.basic_ipq = IPQ()
+        self.basic_ipq._heap = ["stuff","things","others","IMPORTANT"]
+        self.basic_ipq._indexes = {item:index for index,item in enumerate(self.basic_ipq._heap)}
+    
+    def test_swap_once(self):
+        start_heap = self.basic_ipq._heap.copy()
+
+        self.basic_ipq._swap(1,3)
+        # those that shouldn't be touched
+        self.assertEqual(start_heap[0], self.basic_ipq._heap[0])
+        self.assertEqual(start_heap[2], self.basic_ipq._heap[2])
+        self.assertEqual(0, self.basic_ipq._indexes[start_heap[0]])
+        self.assertEqual(2, self.basic_ipq._indexes[start_heap[2]])
+
+        # those that SHOULD be touched
+        self.assertEqual(start_heap[1], self.basic_ipq._heap[3])
+        self.assertEqual(start_heap[3], self.basic_ipq._heap[1])
+        self.assertEqual(1, self.basic_ipq._indexes[start_heap[3]])
+        self.assertEqual(3, self.basic_ipq._indexes[start_heap[1]])
+    
+    def test_swap_with_itself(self):
+        start_heap = self.basic_ipq._heap.copy()
+
+        self.basic_ipq._swap(1,1)
+        # those that shouldn't be touched
+        for index in range(4):
+            self.assertEqual(start_heap[index], self.basic_ipq._heap[index])
+            self.assertEqual(index, self.basic_ipq._indexes[start_heap[index]])
+    
+    def test_two_disparate_swaps(self):
+        start_heap = self.basic_ipq._heap.copy()
+
+        self.basic_ipq._swap(1,3)
+        self.basic_ipq._swap(0,2)
+        self.assertEqual(start_heap[0], self.basic_ipq._heap[2])
+        self.assertEqual(start_heap[1], self.basic_ipq._heap[3])
+        self.assertEqual(start_heap[2], self.basic_ipq._heap[0])
+        self.assertEqual(start_heap[3], self.basic_ipq._heap[1])
+        self.assertEqual(0, self.basic_ipq._indexes[start_heap[2]])
+        self.assertEqual(1, self.basic_ipq._indexes[start_heap[3]])
+        self.assertEqual(2, self.basic_ipq._indexes[start_heap[0]])
+        self.assertEqual(3, self.basic_ipq._indexes[start_heap[1]])
+    
+    def test_two_overlapping_swaps(self):
+        start_heap = self.basic_ipq._heap.copy()
+
+        self.basic_ipq._swap(1,3)
+        self.basic_ipq._swap(1,2)
+        self.assertEqual(start_heap[0], self.basic_ipq._heap[0])
+        self.assertEqual(start_heap[1], self.basic_ipq._heap[3])
+        self.assertEqual(start_heap[2], self.basic_ipq._heap[1])
+        self.assertEqual(start_heap[3], self.basic_ipq._heap[2])
+        self.assertEqual(0, self.basic_ipq._indexes[start_heap[0]])
+        self.assertEqual(1, self.basic_ipq._indexes[start_heap[2]])
+        self.assertEqual(2, self.basic_ipq._indexes[start_heap[3]])
+        self.assertEqual(3, self.basic_ipq._indexes[start_heap[1]])
+
+class IPQ_siftup_tests(unittest.TestCase):
+    def setUp(self):
+        self.heap_data = ["stuff","things","others","IMPORTANT"]
+        self.priorities_data = {"stuff":3,"things":2,"others":4,"IMPORTANT":1}
+    
+    def test_siftup_single_item(self):
+        ipq = IPQ()
+        ipq._heap.append(self.heap_data[0])
+        ipq._indexes[self.heap_data[0]] = 0
+        ipq._priorities[self.heap_data[0]] = self.priorities_data[self.heap_data[0]]
+
+        ipq._siftup(0) # no crash
+        # check that the lengths are untouched
+        self.assertEqual(1, len(ipq._heap))
+        self.assertEqual(1, len(ipq._indexes))
+        self.assertEqual(1, len(ipq._priorities))
+
+        # check that the item info stays
+        self.assertEqual(self.heap_data[0], ipq._heap[0])
+        self.assertEqual(0, ipq._indexes[ipq._heap[0]])
+        self.assertEqual(self.priorities_data[self.heap_data[0]], ipq._priorities[self.heap_data[0]])
+
+    def test_siftup_root(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[1::-1]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(0) # no crash
+        # check that the lengths are untouched
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that the item info stays
+        for index,item in enumerate(self.heap_data[1::-1]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_siftup_two_preorder(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[1::-1]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(1)
+        # check that the lengths are untouched
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that the item info stays
+        for index,item in enumerate(self.heap_data[1::-1]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_siftup_two_out_of_order_leaf(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[:2]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(1)
+        # check that the lengths are untouched
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that the item info stays
+        for index,item in enumerate(self.heap_data[1::-1]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_siftup_four_out_of_order_branch(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data.copy()
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(1)
+        # check that the lengths are untouched
+        self.assertEqual(4, len(ipq._heap))
+        self.assertEqual(4, len(ipq._indexes))
+        self.assertEqual(4, len(ipq._priorities))
+
+        # check that the item info stays
+        for ipq_index,index in enumerate([1,0,2,3]):
+            item = self.heap_data[index]
+            self.assertEqual(item, ipq._heap[ipq_index], index)
+            self.assertEqual(ipq_index, ipq._indexes[item], index)
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item], index)
+    
+    def test_siftup_four_out_of_order_leaf(self):
+        ipq = IPQ()
+        ipq._heap = [self.heap_data[index] for index in [1,0,2,3]]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(3)
+        # check that the lengths are untouched
+        self.assertEqual(4, len(ipq._heap))
+        self.assertEqual(4, len(ipq._indexes))
+        self.assertEqual(4, len(ipq._priorities))
+
+        # check that the item info stays
+        for ipq_index,index in enumerate([3,1,2,0]):
+            item = self.heap_data[index]
+            self.assertEqual(item, ipq._heap[ipq_index], index)
+            self.assertEqual(ipq_index, ipq._indexes[item], index)
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item], index)
+    
+    def test_siftup_four_stop_at_branch(self):
+        ipq = IPQ()
+        ipq._heap = [self.heap_data[index] for index in [3,0,2,1]]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(3)
+        # check that the lengths are untouched
+        self.assertEqual(4, len(ipq._heap))
+        self.assertEqual(4, len(ipq._indexes))
+        self.assertEqual(4, len(ipq._priorities))
+
+        # check that the item info stays
+        for ipq_index,index in enumerate([3,1,2,0]):
+            item = self.heap_data[index]
+            self.assertEqual(item, ipq._heap[ipq_index], index)
+            self.assertEqual(ipq_index, ipq._indexes[item], index)
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item], index)
+
+
+class IPQ_internal_put_tests(unittest.TestCase):
+    def setUp(self):
+        self.heap_data = ["stuff","things","others","IMPORTANT"]
+        self.priorities_data = {"stuff":3,"things":2,"others":4,"IMPORTANT":1}
+    
+    def test_put_one_item(self):
+        ipq = IPQ()
+        ipq._put(self.heap_data[0], self.priorities_data[self.heap_data[0]])
+
+        # check that the lengths were incremented
+        self.assertEqual(1, len(ipq._heap))
+        self.assertEqual(1, len(ipq._indexes))
+        self.assertEqual(1, len(ipq._priorities))
+
+        # check that the items were added correctly
+        self.assertEqual(self.heap_data[0], ipq._heap[0])
+        self.assertEqual(0, ipq._indexes[ipq._heap[0]])
+        self.assertEqual(self.priorities_data[self.heap_data[0]], ipq._priorities[self.heap_data[0]])
+    
+    def test_put_two_items_preordered(self):
+        ipq = IPQ()
+        ipq._put(self.heap_data[1], self.priorities_data[self.heap_data[1]])
+        ipq._put(self.heap_data[0], self.priorities_data[self.heap_data[0]])
+
+        # check that the lengths were incremented
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that both items were added with their correct priorities, disregarding order
+        for item in self.heap_data[0:2]:
+            self.assertIn(item, ipq._heap)
+            self.assertIn(item, ipq._indexes)
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+
+        # check that the items are ordered correctly
+        for index,item in enumerate(self.heap_data[1::-1]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+    
+    def test_put_two_items_out_of_order(self):
+        ipq = IPQ()
+        ipq._put(self.heap_data[0], self.priorities_data[self.heap_data[0]])
+        ipq._put(self.heap_data[1], self.priorities_data[self.heap_data[1]])
+
+        # check that the lengths were incremented
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that both items were added with their correct priorities, disregarding order
+        for item in self.heap_data[0:2]:
+            self.assertIn(item, ipq._heap)
+            self.assertIn(item, ipq._indexes)
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+
+        # check that the items are ordered correctly
+        for index,item in enumerate(self.heap_data[1::-1]):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+
+if __name__ == '__main__':
+    unittest.main()
