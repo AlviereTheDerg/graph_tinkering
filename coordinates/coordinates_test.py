@@ -1,6 +1,9 @@
 
 import unittest
-from coordinates.coordinates import *
+if __name__ == '__main__':
+    from coordinates import *
+else:
+    from coordinates.coordinates import *
 
 class zero_pad_test(unittest.TestCase):
     def test_empty_tuple(self):
@@ -159,3 +162,6 @@ class cosine_of_test(unittest.TestCase):
 
     def test_2d_line(self):
         self.assertAlmostEqual(cosine_of(tuple(),(1,),(-1,)), -1, msg="Straight line: cos(180)")
+
+if __name__ == '__main__':
+    unittest.main()
