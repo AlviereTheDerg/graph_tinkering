@@ -12,4 +12,6 @@ I recently finished Graph Algorithms, and I'm curious what some look like in act
    - [x] generate set of random coordinates
    - [x] KNN to connect coordinates into a graph
 - [x] Beam search
+- [x] Add automated unittest runner
+- [ ] create an Indexed Priority Queue ft. O(1) peek, O(log n) push, pop, update key
 - [ ] Djikstra and A*
