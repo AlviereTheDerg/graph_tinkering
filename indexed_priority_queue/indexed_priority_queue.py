@@ -55,7 +55,12 @@ class IPQ:
         self._siftup(self._indexes[key])
     
     def _update_key(self, key, new_value):
-        pass
+        old_value = self._priorities[key]
+        self._priorities[key] = new_value
+        if self._compare(old_value, new_value): # if new value is worse
+            self._siftdown(self._indexes[key])
+        else:
+            self._siftup(self._indexes[key])
     
     #PQ methods
     def peek(self):
