@@ -9,10 +9,16 @@ class IPQ:
     """
 
     def __init__(self, key_priority=None):
-        self._heap = []
-        self._indexes = {}
-        self._priorities = {}
         self._compare = lt
+
+        if key_priority is None:
+            self._priorities = dict()
+        else:
+            self._priorities = key_priority.copy()
+        self._heap = list(self._priorities.keys())
+        self._indexes = {item:index for index,item in enumerate(self._heap)}
+        for index in range(len(self._heap)//2,-1,-1):
+            self._siftdown(index)
     
     #helper methods
     def _swap(self, first_index, second_index):

@@ -8,7 +8,7 @@ else:
 class IPQ_initialization_tests(unittest.TestCase):
     def setUp(self):
         self.heap_data = ["IMPORTANT","things","others","stuff","dishes"]
-        self.priorities_data = {"IMPORTANT":1,"things":2,"others":4,"stuff":3,"dishes":float('inf')}
+        self.priorities_data = {"others":4,"IMPORTANT":1,"dishes":float('inf'),"stuff":3,"things":2}
     
     def test_no_params(self):
         ipq = IPQ()
@@ -65,11 +65,16 @@ class IPQ_initialization_tests(unittest.TestCase):
         self.assertEqual(5, len(ipq._indexes))
         self.assertEqual(5, len(ipq._priorities))
 
-        # check the contents
-        for index,item in enumerate(self.heap_data):
-            self.assertEqual(item, ipq._heap[index])
-            self.assertEqual(index, ipq._indexes[item])
-            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+        # check the heaps have the same/correct contents
+        self.assertEqual(set(self.heap_data), set(ipq._heap))
+        self.assertEqual(self.priorities_data, ipq._priorities)
+        self.assertEqual(self.priorities_data.keys(), ipq._indexes.keys())
+        self.assertEqual([ipq._indexes[item] for item in ipq._heap], list(range(5)))
+
+        # check the contents are in order
+        self.assertEqual(self.heap_data[0], ipq._heap[0]) # minimum priority item
+        for index,item in enumerate(ipq._heap[1:], start=1):
+            self.assertTrue(self.priorities_data[ipq._heap[(index-1)//2]] <= self.priorities_data[item])
     
     def test_import_disconnect_input_dict(self):
         ipq = IPQ(self.priorities_data)
@@ -81,11 +86,16 @@ class IPQ_initialization_tests(unittest.TestCase):
         self.assertEqual(5, len(ipq._indexes))
         self.assertEqual(5, len(ipq._priorities))
 
-        # check the contents
-        for index,item in enumerate(self.heap_data):
-            self.assertEqual(item, ipq._heap[index])
-            self.assertEqual(index, ipq._indexes[item])
-            self.assertEqual(old_priorities[item], ipq._priorities[item])
+        # check the heaps have the same/correct contents
+        self.assertEqual(set(self.heap_data), set(ipq._heap))
+        self.assertEqual(old_priorities, ipq._priorities)
+        self.assertEqual(self.priorities_data.keys(), ipq._indexes.keys())
+        self.assertEqual([ipq._indexes[item] for item in ipq._heap], list(range(5)))
+
+        # check the contents are in order
+        self.assertEqual(self.heap_data[0], ipq._heap[0]) # minimum priority item
+        for index,item in enumerate(ipq._heap[1:], start=1):
+            self.assertTrue(old_priorities[ipq._heap[(index-1)//2]] <= old_priorities[item])
 
 
 class IPQ_swap_function_tests(unittest.TestCase):
