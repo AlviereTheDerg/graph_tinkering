@@ -159,8 +159,8 @@ class IPQ_swap_function_tests(unittest.TestCase):
 
 class IPQ_siftup_tests(unittest.TestCase):
     def setUp(self):
-        self.heap_data = ["stuff","things","others","IMPORTANT"]
-        self.priorities_data = {"stuff":3,"things":2,"others":4,"IMPORTANT":1}
+        self.heap_data = ["stuff","things","others","IMPORTANT","dishes"]
+        self.priorities_data = {"stuff":3,"things":2,"others":4,"IMPORTANT":1,"dishes":float('inf')}
     
     def test_siftup_single_item(self):
         ipq = IPQ()
@@ -235,7 +235,7 @@ class IPQ_siftup_tests(unittest.TestCase):
     
     def test_siftup_four_out_of_order_branch(self):
         ipq = IPQ()
-        ipq._heap = self.heap_data.copy()
+        ipq._heap = self.heap_data[0:4]
         ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
         ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
 
@@ -296,7 +296,7 @@ class IPQ_siftup_tests(unittest.TestCase):
         ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
         ipq._priorities = {item:1 for item in ipq._heap}
 
-        ipq._siftdown(1)
+        ipq._siftup(1)
         # check that the lengths are untouched
         self.assertEqual(2, len(ipq._heap))
         self.assertEqual(2, len(ipq._indexes))
@@ -307,6 +307,44 @@ class IPQ_siftup_tests(unittest.TestCase):
             self.assertEqual(item, ipq._heap[index])
             self.assertEqual(index, ipq._indexes[item])
             self.assertEqual(1, ipq._priorities[item])
+
+    def test_siftup_off_by_one_root_children(self):
+        ipq = IPQ()
+        ipq._heap = [self.heap_data[index] for index in [1,2,0]]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(2)
+        # check that the lengths are untouched
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that the item info is correct
+        for index,item in enumerate([1,2,0]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+
+    def test_siftup_off_by_one_cross_branch(self):
+        ipq = IPQ()
+        ipq._heap = [self.heap_data[index] for index in [3,1,4,0,2]]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        ipq._siftup(4)
+        # check that the lengths are untouched
+        self.assertEqual(5, len(ipq._heap))
+        self.assertEqual(5, len(ipq._indexes))
+        self.assertEqual(5, len(ipq._priorities))
+
+        # check that the item info is correct
+        for index,item in enumerate([3,1,4,0,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
 
 class IPQ_siftdown_tests(unittest.TestCase):
     def setUp(self):
