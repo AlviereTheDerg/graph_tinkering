@@ -75,8 +75,10 @@ class IPQ:
 
     def pop(self, key=None):
         if key is None:
-            key = self._heap[0]
-        index = self._indexes[key]
+            index = 0
+        else:
+            index = self._indexes[key]
+            
         self._swap(index,-1)
         result = self._heap.pop()
         del self._priorities[result]
