@@ -563,8 +563,8 @@ class IPQ_internal_update_key_tests(unittest.TestCase):
 
 class IPQ_pop_tests(unittest.TestCase):
     def setUp(self):
-        self.heap_data = ["IMPORTANT","things","others","stuff"]
-        self.priorities_data = {"IMPORTANT":1,"things":2,"others":4,"stuff":3}
+        self.heap_data = ["IMPORTANT","things","others","stuff","dishes"]
+        self.priorities_data = {"IMPORTANT":1,"things":2,"others":4,"stuff":3,"dishes":float('inf')}
 
     def test_pop_empty(self):
         ipq = IPQ()
@@ -648,7 +648,267 @@ class IPQ_pop_tests(unittest.TestCase):
             self.assertEqual(item, ipq._heap[index])
             self.assertEqual(index, ipq._indexes[item])
             self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_non_present(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:1]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
 
+        self.assertRaises(KeyError, ipq.pop, key=self.heap_data[1])
+    
+    def test_pop_key_one_from_one_entry(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:1]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[0])
+        # check that the lengths were affected
+        self.assertEqual(0, len(ipq._heap))
+        self.assertEqual(0, len(ipq._indexes))
+        self.assertEqual(0, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[0], value)
+    
+    def test_pop_key_root_from_two_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:2]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[0])
+        # check that the lengths were affected
+        self.assertEqual(1, len(ipq._heap))
+        self.assertEqual(1, len(ipq._indexes))
+        self.assertEqual(1, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[0], value)
+
+        # check the remaining values
+        self.assertEqual(self.heap_data[1], ipq._heap[0])
+        self.assertEqual(0, ipq._indexes[self.heap_data[1]])
+        self.assertEqual(self.priorities_data[self.heap_data[1]], ipq._priorities[self.heap_data[1]])
+    
+    def test_pop_key_leaf_from_two_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:2]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[1])
+        # check that the lengths were affected
+        self.assertEqual(1, len(ipq._heap))
+        self.assertEqual(1, len(ipq._indexes))
+        self.assertEqual(1, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[1], value)
+
+        # check the remaining values
+        self.assertEqual(self.heap_data[0], ipq._heap[0])
+        self.assertEqual(0, ipq._indexes[self.heap_data[0]])
+        self.assertEqual(self.priorities_data[self.heap_data[0]], ipq._priorities[self.heap_data[0]])
+    
+    def test_pop_key_root_from_three_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:3]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[0])
+        # check that the lengths were affected
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[0], value)
+
+        # check the remaining values
+        for index,item in enumerate([1,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_left_leaf_from_three_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:3]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[1])
+        # check that the lengths were affected
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[1], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_right_leaf_from_three_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:3]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[2])
+        # check that the lengths were affected
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[2], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,1]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_root_from_four_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:4]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[0])
+        # check that the lengths were affected
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[0], value)
+
+        # check the remaining values
+        for index,item in enumerate([1,3,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_high_leaf_from_four_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:4]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[2])
+        # check that the lengths were affected
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[2], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,1,3]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_low_leaf_from_four_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:4]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[3])
+        # check that the lengths were affected
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[3], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,1,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_branch_from_four_entries(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:4]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[1])
+        # check that the lengths were affected
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[1], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,3,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_branch_from_five_entries_first_order(self):
+        ipq = IPQ()
+        ipq._heap = self.heap_data[0:5]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[1])
+        # check that the lengths were affected
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[1], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,3,2,4]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_pop_key_branch_from_five_entries_second_order(self):
+        ipq = IPQ()
+        ipq._heap = [self.heap_data[index] for index in [0,1,2,4,3]]
+        ipq._indexes = {item:index for index,item in enumerate(ipq._heap)}
+        ipq._priorities = {item:self.priorities_data[item] for item in ipq._heap}
+
+        value = ipq.pop(self.heap_data[1])
+        # check that the lengths were affected
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check that pop result was correct
+        self.assertEqual(self.heap_data[1], value)
+
+        # check the remaining values
+        for index,item in enumerate([0,3,2,4]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
 
 if __name__ == '__main__':
     unittest.main()

@@ -73,7 +73,7 @@ class IPQ:
     def peek(self):
         return self._heap[0]
 
-    def pop(self):
+    def pop(self, key=None):
         self._swap(0,-1)
         result = self._heap.pop()
         del self._priorities[result]
