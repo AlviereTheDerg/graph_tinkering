@@ -61,6 +61,13 @@ class IPQ:
             self._siftdown(self._indexes[key])
         else:
             self._siftup(self._indexes[key])
+
+    # route between _put and _update_key
+    def _route_KV(self, key, value):
+        if key not in self._indexes:
+            self._put(key, value)
+        else:
+            self._update_key(key, value)
     
     #PQ methods
     def peek(self):
@@ -70,9 +77,8 @@ class IPQ:
         pass
 
     def put(self, key, value):
-        if key not in self._indexes:
-            self._put(key, value)
+        self._route_KV(key, value)
 
     #IPQ method
     def update_key(self, key, new_value):
-        pass
+        self._route_KV(key, new_value)
