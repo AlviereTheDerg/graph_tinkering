@@ -74,7 +74,12 @@ class IPQ:
         return self._heap[0]
 
     def pop(self):
-        pass
+        self._swap(0,-1)
+        result = self._heap.pop()
+        del self._priorities[result]
+        del self._indexes[result]
+        self._siftdown(0)
+        return result
 
     def put(self, key, value):
         self._route_KV(key, value)

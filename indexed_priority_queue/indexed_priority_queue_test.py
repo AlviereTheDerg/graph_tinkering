@@ -621,9 +621,11 @@ class IPQ_pop_tests(unittest.TestCase):
         self.assertEqual(self.heap_data[0], value)
 
         # check the remaining values
-        self.assertEqual(self.heap_data[1:3], ipq._heap)
-        self.assertEqual({item:index for index,item in enumerate(self.heap_data[1:3])}, ipq._indexes)
-        self.assertEqual({item:self.priorities_data[item] for item in self.heap_data[1:3]}, ipq._priorities[self.heap_data[1]])
+        for index,item in enumerate([1,2]):
+            item = self.heap_data[item]
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
     
     def test_pop_one_from_four_entries(self):
         ipq = IPQ()
