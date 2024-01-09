@@ -30,7 +30,7 @@ class IPQ:
     
     def _siftup(self, index):
         while index > 0:
-            parent = index // 2
+            parent = (index-1) // 2
             if self._compare(self._priorities[self._heap[index]], self._priorities[self._heap[parent]]):
                 self._swap(parent, index)
                 index = parent
