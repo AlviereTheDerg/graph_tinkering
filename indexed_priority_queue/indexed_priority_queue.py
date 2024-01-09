@@ -8,7 +8,7 @@ class IPQ:
     A given key can only hold a single priority value
     """
 
-    def __init__(self):
+    def __init__(self, key_priority=None):
         self._heap = []
         self._indexes = {}
         self._priorities = {}

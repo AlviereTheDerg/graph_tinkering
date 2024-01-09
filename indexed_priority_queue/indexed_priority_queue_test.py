@@ -6,11 +6,87 @@ else:
     from indexed_priority_queue.indexed_priority_queue import IPQ
 
 class IPQ_initialization_tests(unittest.TestCase):
+    def setUp(self):
+        self.heap_data = ["IMPORTANT","things","others","stuff","dishes"]
+        self.priorities_data = {"IMPORTANT":1,"things":2,"others":4,"stuff":3,"dishes":float('inf')}
+    
     def test_no_params(self):
         ipq = IPQ()
         self.assertEqual(0, len(ipq._heap))
         self.assertEqual(0, len(ipq._indexes))
         self.assertEqual(0, len(ipq._priorities))
+
+    def test_import_single_priority(self):
+        ipq = IPQ({self.heap_data[0]:self.priorities_data[self.heap_data[0]]})
+
+        # check the lengths
+        self.assertEqual(1, len(ipq._heap))
+        self.assertEqual(1, len(ipq._indexes))
+        self.assertEqual(1, len(ipq._priorities))
+
+        # check the contents
+        self.assertEqual(self.heap_data[0], ipq._heap[0])
+        self.assertEqual(0, ipq._indexes[self.heap_data[0]])
+        self.assertEqual(self.priorities_data[self.heap_data[0]], ipq._priorities[self.heap_data[0]])
+
+    def test_import_two_priority(self):
+        ipq = IPQ({item:self.priorities_data[item] for item in self.heap_data[0:2]})
+
+        # check the lengths
+        self.assertEqual(2, len(ipq._heap))
+        self.assertEqual(2, len(ipq._indexes))
+        self.assertEqual(2, len(ipq._priorities))
+
+        # check the contents
+        for index,item in enumerate(self.heap_data[0:2]): 
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_import_three_priority(self):
+        ipq = IPQ({item:self.priorities_data[item] for item in self.heap_data[0:3]})
+
+        # check the lengths
+        self.assertEqual(3, len(ipq._heap))
+        self.assertEqual(3, len(ipq._indexes))
+        self.assertEqual(3, len(ipq._priorities))
+
+        # check the contents
+        for index,item in enumerate(self.heap_data[0:3]): 
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_import_five_priority(self):
+        ipq = IPQ(self.priorities_data)
+
+        # check the lengths
+        self.assertEqual(5, len(ipq._heap))
+        self.assertEqual(5, len(ipq._indexes))
+        self.assertEqual(5, len(ipq._priorities))
+
+        # check the contents
+        for index,item in enumerate(self.heap_data):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(self.priorities_data[item], ipq._priorities[item])
+    
+    def test_import_disconnect_input_dict(self):
+        ipq = IPQ(self.priorities_data)
+        old_priorities = self.priorities_data.copy()
+        self.priorities_data = {item:0 for item in self.priorities_data}
+
+        # check the lengths
+        self.assertEqual(5, len(ipq._heap))
+        self.assertEqual(5, len(ipq._indexes))
+        self.assertEqual(5, len(ipq._priorities))
+
+        # check the contents
+        for index,item in enumerate(self.heap_data):
+            self.assertEqual(item, ipq._heap[index])
+            self.assertEqual(index, ipq._indexes[item])
+            self.assertEqual(old_priorities[item], ipq._priorities[item])
+
 
 class IPQ_swap_function_tests(unittest.TestCase):
     def setUp(self):
