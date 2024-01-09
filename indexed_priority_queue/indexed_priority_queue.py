@@ -74,11 +74,14 @@ class IPQ:
         return self._heap[0]
 
     def pop(self, key=None):
-        self._swap(0,-1)
+        if key is None:
+            key = self._heap[0]
+        index = self._indexes[key]
+        self._swap(index,-1)
         result = self._heap.pop()
         del self._priorities[result]
         del self._indexes[result]
-        self._siftdown(0)
+        self._siftdown(index)
         return result
 
     def put(self, key, value):

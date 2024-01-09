@@ -874,9 +874,9 @@ class IPQ_pop_tests(unittest.TestCase):
 
         value = ipq.pop(self.heap_data[1])
         # check that the lengths were affected
-        self.assertEqual(3, len(ipq._heap))
-        self.assertEqual(3, len(ipq._indexes))
-        self.assertEqual(3, len(ipq._priorities))
+        self.assertEqual(4, len(ipq._heap))
+        self.assertEqual(4, len(ipq._indexes))
+        self.assertEqual(4, len(ipq._priorities))
 
         # check that pop result was correct
         self.assertEqual(self.heap_data[1], value)
@@ -896,9 +896,9 @@ class IPQ_pop_tests(unittest.TestCase):
 
         value = ipq.pop(self.heap_data[1])
         # check that the lengths were affected
-        self.assertEqual(3, len(ipq._heap))
-        self.assertEqual(3, len(ipq._indexes))
-        self.assertEqual(3, len(ipq._priorities))
+        self.assertEqual(4, len(ipq._heap))
+        self.assertEqual(4, len(ipq._indexes))
+        self.assertEqual(4, len(ipq._priorities))
 
         # check that pop result was correct
         self.assertEqual(self.heap_data[1], value)
